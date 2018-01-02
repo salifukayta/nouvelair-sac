@@ -1,0 +1,38 @@
+
+:host {
+  overflow: auto;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.center-input >>> div {
+  justify-content: center;
+}
+
+.list-style {
+  display: flex;
+  justify-content: center;
+}
+
+img {
+  width: 50px;
+  height: 50px;
+}
+
+.hide-element {
+  display: none;
+}
+
+.get-picture {
+}
+
+.pickPicture {
+  position: relative;
+  left: -25px;
+}
+
+.pickPictureMsg {
+  color: #f44336;
+}

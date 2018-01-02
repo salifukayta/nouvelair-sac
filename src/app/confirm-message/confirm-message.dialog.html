@@ -1,0 +1,10 @@
+<h2>{{title}}</h2>
+
+<button mat-button class="mask-btn"></button>
+<p>{{content}}</p>
+
+<mat-list-item no-lines class="btns-dialog">
+  <button mat-button color="primary" (click)="dialogRef.close(false)">Cancel</button>
+  <button mat-button color="primary" (click)="dialogRef.close(true)">OK</button>
+</mat-list-item>
+

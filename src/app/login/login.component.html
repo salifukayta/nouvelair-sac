@@ -1,0 +1,113 @@
+<mat-list class="list-style">
+  <form [formGroup]="loginForm">
+
+    <h2 class="center-text">Bienvenu au Nouvel Air </h2>
+    <p class="center-text">inscrivez vous et rester en contact avec vos voisins !</p>
+
+    <br><br>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <input matInput type="email" required placeholder="Email" formControlName="email" [(ngModel)]="utilisateur.email"
+               (keyup.enter)="loginForm.controls['email'].valid && loginForm.controls['password'].valid && login()">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.email">
+      {{ formErrors.email }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <input type="password" required matInput placeholder="Mot de passe" formControlName="password" [(ngModel)]="password"
+               (keyup.enter)="loginForm.controls['email'].valid && loginForm.controls['password'].valid && login()">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.password">
+      {{ formErrors.password }}
+    </mat-list-item>
+
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <mat-form-field>
+        <input type="password" required matInput placeholder="Confirmer Mot de passe" formControlName="confirmPassword" [(ngModel)]="confirmPassword">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.confirmPassword !== ''">
+      {{ formErrors.confirmPassword }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input" [ngClass]="{pickPicture: inputAvatar.value}" *ngIf="!isOnLogin">
+      <img class="margin-right" *ngIf="inputAvatar.value" (click)="inputAvatar.click()" [src]="userAvatar">      &nbsp;&nbsp;&nbsp;
+      <div [ngClass]="{pickPictureMsg: !inputAvatar.value}" (click)="inputAvatar.click()">
+        Taper pour choisir votre photo de profil *
+      </div>
+      <input type="file" class="hide-element" #inputAvatar (change)="changeAvatar($event)">
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <mat-form-field>
+        <input matInput placeholder="Nom" formControlName="nom" [(ngModel)]="utilisateur.nom">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.nom">
+      {{ formErrors.nom }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <mat-form-field>
+        <input matInput placeholder="Prenom" formControlName="prenom" [(ngModel)]="utilisateur.prenom">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.prenom">
+      {{ formErrors.prenom }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <mat-form-field>
+        <mat-select placeholder="Batiment" formControlName="batiment" [(value)]="utilisateur.batiment">
+          <mat-option value="A">A</mat-option>
+          <mat-option value="B">B</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.batiment">
+      {{ formErrors.batiment }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <mat-form-field>
+        <input type="number" matInput placeholder="Numero appartement" formControlName="numApp" [(ngModel)]="utilisateur.numApp">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="!isOnLogin && formErrors.numApp">
+      {{ formErrors.numApp }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="isOnLogin">
+      <button mat-raised-button color="primary"
+              [disabled]="loginForm.controls['email'].invalid || loginForm.controls['password'].invalid"
+              (tap)="loginForm.controls['email'].valid && loginForm.controls['password'].valid && login()">Login
+      </button>
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="isOnLogin">
+      <button mat-raised-button color="warn" clear (tap)="resetPassword()">Mot de passe oublié</button>
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <button mat-raised-button color="primary"
+              [disabled]="loginForm.invalid || !utilisateur.batiment || !userAvatar"
+              (tap)="loginForm.valid && utilisateur.batiment && userAvatar && signUp()">Créer mon compte
+      </button>
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="isOnLogin">
+      <button mat-button color="primary" (tap)="signUp()">Créer mon compte</button>
+    </mat-list-item>
+
+    <mat-list-item class="center-input" *ngIf="!isOnLogin">
+      <button mat-button color="primary" color="warn" (tap)="login()">Retour au Login</button>
+    </mat-list-item>
+
+  </form>
+</mat-list>

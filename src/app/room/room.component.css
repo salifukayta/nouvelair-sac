@@ -1,0 +1,14 @@
+
+:host {
+  overflow: auto;
+}
+
+.list-style {
+  overflow: auto;
+}
+
+.corner-bottom-right {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}

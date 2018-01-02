@@ -1,0 +1,39 @@
+
+:host {
+  overflow: auto;
+}
+
+.center-input {
+  display: flex;
+  justify-content: center;
+}
+
+.style-avatar {
+  height: 48px;
+  border-radius: 1.8rem;
+}
+
+.loading-size {
+  width: 20px;
+}
+
+.margin20 {
+  margin: 20px;
+}
+
+.hide-element {
+  display: none;
+}
+
+.pickPicture {
+  position: relative;
+  left: -25px;
+}
+
+.avatar-loading {
+  top: 100%;
+}
+.avatar-loading div {
+  width: 30px;
+  height: 30px;
+}

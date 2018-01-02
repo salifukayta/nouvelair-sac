@@ -1,0 +1,94 @@
+<mat-toolbar color="primary" class="center-elements">
+  <button mat-icon-button (click)="openMenu()">
+    <mat-icon><i class="material-icons">menu</i></mat-icon>
+  </button>
+  <span class="full-width center-text">Profile</span>
+  <div class="btn-size">
+  </div>
+</mat-toolbar>
+
+<mat-list>
+  <form [formGroup]="profileForm">
+
+    <mat-list-item class="center-input" [ngClass]="{pickPicture: editMode}">
+      <img class="margin-right style-avatar" *ngIf="!isLoadingAvatar" (click)="editMode && inputAvatar.click()" [src]="userAvatar">
+      <div class="app-loader avatar-loading" *ngIf="isLoadingAvatar"><div></div></div>
+      &nbsp;&nbsp;&nbsp;
+      <div *ngIf="editMode" (click)="inputAvatar.click()">Tap to change your avatar</div>
+      <input type="file" class="hide-element" #inputAvatar (change)="changeAvatar($event)">
+    </mat-list-item>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <input type="text" matInput placeholder="Nom" formControlName="nom" [(ngModel)]="utilisateur.nom">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="formErrors.nom">
+      {{ formErrors.nom }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <input type="text" matInput placeholder="Prenom" formControlName="prenom" [(ngModel)]="utilisateur.prenom">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="formErrors.prenom">
+      {{ formErrors.prenom }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <input type="email" matInput placeholder="Email :" formControlName="email" [(ngModel)]="utilisateur.email">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="formErrors.email">
+      {{ formErrors.email }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input" (click)="editMode && changePassword()">
+      <mat-form-field>
+        <input type="password" matInput placeholder="Password :" disabled="true" value="******">
+      </mat-form-field>
+    </mat-list-item>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <mat-select placeholder="Batiment" formControlName="batiment" [disabled]="!editMode" [(ngModel)]="utilisateur.batiment">
+          <mat-option value="A">A</mat-option>
+          <mat-option value="B">B</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="formErrors.batiment">
+      {{ formErrors.batiment }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input">
+      <mat-form-field>
+        <input type="number" matInput placeholder="Numero app" formControlName="numApp" [(ngModel)]="utilisateur.numApp">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item class="center-input alert alert-danger" *ngIf="formErrors.numApp">
+      {{ formErrors.numApp }}
+    </mat-list-item>
+
+    <mat-list-item class="center-input margin20">
+      <button mat-button *ngIf="!editMode" (click)="editItems(true)">
+        <mat-icon><i class="material-icons">mode_edit</i></mat-icon>
+        Edit Profile
+      </button>
+
+      <button mat-raised-button color="primary" class="margin20" [disabled]="!profileForm.valid" *ngIf="editMode"
+              (click)="profileForm.valid && save()">
+              <!--(click)="save()">-->
+        Save changes
+      </button>
+
+      <button mat-raised-button color="primary" class="margin20"
+              *ngIf="editMode" (click)="editItems(false)">Cancel changes
+      </button>
+    </mat-list-item>
+
+  </form>
+
+</mat-list>

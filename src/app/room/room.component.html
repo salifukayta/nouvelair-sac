@@ -1,0 +1,28 @@
+<mat-toolbar color="primary" class="center-elements">
+  <button mat-icon-button (click)="openMenu()">
+    <mat-icon><i class="material-icons">menu</i></mat-icon>
+  </button>
+  <span class="full-width center-text">Nouvel Air, batiment A et B</span>
+  <div class="btn-size"></div>
+</mat-toolbar>
+
+<div *ngIf="!firstLoad && sujets?.length === 0">
+  <br>
+  <p class="center-text">Créer le 1er sujet de discussion</p>
+</div>
+
+<mat-list class="list-style">
+  <nav>
+    <mat-list-item>
+      <button mat-line mat-button *ngFor="let sujet of sujets" [routerLink]="sujet">
+        {{sujet}}
+      </button>
+    </mat-list-item>
+  </nav>
+</mat-list>
+
+<div class="corner-bottom-right">
+  <button mat-fab color="primary" (tap)="ajouterSujet()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

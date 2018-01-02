@@ -1,0 +1,76 @@
+<mat-toolbar color="primary" class="center-elements">
+  <button mat-icon-button (click)="openMenu()">
+    <mat-icon><i class="material-icons">menu</i></mat-icon>
+  </button>
+  <span class="full-width center-text">Sujet: {{sujetCourant}}</span>
+  <div class="btn-size">
+  </div>
+</mat-toolbar>
+
+<mat-list class="list-style" id="msgs-list">
+
+  <mat-list-item *ngIf="!firstLoad && messages?.length === 0">
+    Envoyer le 1er message !
+  </mat-list-item>
+
+  <div #scrollingChat style="overflow-y: scroll; height: 100%">
+
+     <!-- TODO the condition here is not correct, is must be a boolean telling if there is still more anterior msgs -->
+    <!--<div *ngIf="myScrollContainer.nativeElement.scrollHeight > (pageHeight - 128)">-->
+      <!--yess, tap here to get more-->
+    <!--</div>-->
+
+    <div *ngFor="let msg of messages" style="display: flex; flex-direction: row; margin-bottom: 10px;">
+      <!--class="chat-msg userMsg"-->
+      <!--<div>-->
+
+      <!--class="chat-header"-->
+      <!--class="utilisateur"-->
+      <div style="display: flex; flex-direction: column; margin-right: 2vh; margin-left: 10px">
+        <!--<img [ngClass.lt-md]="{imgSizePhone: true}" [src]="msg.expediteur.avatar" (click)="openPopupAvaar(msg.expediteur.avatar)">-->
+        <img [ngClass.lt-md]="'imgSizePhone'" [src]="msg.expediteur.avatar" (click)="openPopupAvaar(msg.expediteur.avatar)">
+        <div class="center-text">
+          {{msg.expediteur.prenom}}.{{msg.expediteur.nom.substr(0, 1).toUpperCase()}}
+        </div>
+        <div class="utilisateur-batiment center-text">{{msg.expediteur.batiment}}{{msg.expediteur.numApp}}</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column;
+    -webkit-border-radius: 35px;
+    -moz-border-radius: 35px;
+    border-radius: 35px;
+    padding-bottom: 10px;
+    min-width: 300px;"
+           [ngClass.lt-md]="{userMsg: msg.expediteur.uid === utilisateurCourant?.uid,
+                           othersMsg: msg.expediteur.uid !== utilisateurCourant?.uid,
+                           msgSizePhone: true}"
+           [ngClass]="{userMsg: msg.expediteur.uid === utilisateurCourant?.uid,
+                    othersMsg: msg.expediteur.uid !== utilisateurCourant?.uid}">
+        <div class="chat-content" #chatContent>
+          {{msg.content}}
+        </div>
+        <div class="msg-date-envoie">
+          <span matTooltip="{{msg.timestamp | date}}">{{msg.timestamp | amTimeAgo}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-list-item id="bottom">
+  </mat-list-item>
+</mat-list>
+<footer>
+  <mat-toolbar>
+    <form>
+      <mat-form-field floatLabel="never">
+        <textarea #textarea matInput placeholder="Ecrire un message" [ngModelOptions]="{standalone: true}"
+                  [(ngModel)]="typedMsg"></textarea>
+      </mat-form-field>
+
+      <button mat-icon-button [disabled]="typedMsg.trim() === ''" (click)="sendMsg()">
+        <mat-icon><i class="material-icons">send</i></mat-icon>
+      </button>
+    </form>
+  </mat-toolbar>
+</footer>
+

@@ -1,0 +1,104 @@
+
+.list-style {
+  position: absolute;
+  top: 64px;
+  bottom: 70px;
+  width: 100%;
+}
+
+/*Style the messages*/
+.chat-msg {
+  display: flex;
+  flex-direction: column;
+  /*border-radius: 10px;*/
+  font-size: 16px;
+  font-family: Roboto,"Helvetica Neue",sans-serif;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px;
+  font-size: 16px;
+}
+
+.chat-content {
+  margin-left: 20px;
+  white-space: pre-line;
+}
+
+.userMsg {
+  background: #dcdef7;
+}
+
+.othersMsg {
+  background: #efeded;
+}
+
+ /*Style the textarea*/
+textarea {
+  height: 50px;
+  resize: none !important;
+}
+
+form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+form mat-form-field {
+  width: Calc(100% - 40px);
+}
+
+.mat-divider {
+  border-top-color: rgba(0,0,0,0.25) !important;
+}
+
+.utilisateur {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.utilisateur-batiment {
+  font-size: 14px;
+}
+
+.msg-date-envoie {
+  display: flex;
+  justify-content: flex-end;
+  color: darkgray;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
+img {
+  max-width: 120px;
+  max-height: 80px;
+}
+
+.imgSizePhone {
+  max-width: 60px;
+  max-height: 50px;
+}
+
+.msgSizePhone {
+  min-width: 200px !important;
+}
+
+.nouveau-message {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 80px;
+}
+
+/*Footer position*/
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  padding-bottom: 5px;
+  background-color: whitesmoke;
+}

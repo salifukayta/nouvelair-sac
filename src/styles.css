@@ -1,1 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import 'assets/material-icons.css';
+
+.center-elements {
+  display: flex;
+  justify-content: space-between;
+}
+
+.alert {
+  white-space: pre-line;
+  margin-bottom: 20px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+}
+
+.alert .md-list-item {
+  height: inherit;
+}
+
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+.center-text {
+  display: flex;
+  justify-content: center;
+}
