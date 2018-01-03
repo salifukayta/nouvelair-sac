@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuService } from '../shared/menu.service';
-import { LoadingService } from '../shared/loading.service';
+import { MenuService } from '../../shared/menu.service';
+import { LoadingService } from '../../shared/loading.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { SujetService } from './room.service';
-import { AjouterSujetDialog } from './add-room/add-room.dialog';
+import { SujetService } from '../sujet.service';
 import { Router } from '@angular/router';
+import { AjouterSujetDialog } from '../ajout-sujet/ajout-sujet.dialog';
 
 @Component({
   selector: 'app-room',
-  templateUrl: './room.component.html',
-  styleUrls: ['./room.component.css']
+  templateUrl: './sujets.component.html',
+  styleUrls: ['./sujets.component.css']
 })
 export class RoomComponent implements OnInit {
 

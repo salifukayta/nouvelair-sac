@@ -4,50 +4,97 @@ import { UserService } from '../shared/user/user-service';
 import { UtilisateurModel } from '../shared/user/user.model';
 import { ChatMessage } from './chat-message';
 
+
 @Injectable()
 export class ChatService {
 
-  private numberLastMessage = 100;
-  private refRooms: Firebase.database.Reference;
+  public static numberLastMessage = 5;
+
+  private refSujet: Firebase.database.Reference;
+  private refNomSujet: Firebase.database.Reference;
+
+  private utilisateurs: {[userUid: string]: UtilisateurModel};
 
   constructor(private userService: UserService) {
-    this.refRooms = Firebase.database().ref('sujets');
+    this.refSujet = Firebase.database().ref('/sujets');
+    this.refNomSujet = Firebase.database().ref('nomSujets');
+    this.utilisateurs = <any>{};
+    this.userService.getCurrent().then((user: UtilisateurModel) => this.utilisateurs[user.uid] = user);
   }
 
-  getLastMessagess(roomName: string): Promise<Array<ChatMessage>> {
-    return this.refRooms.child(roomName).limitToLast(this.numberLastMessage).once('value').then(snapshot => {
-      const chatMessages: ChatMessage = snapshot.val();
-      return Object.keys(chatMessages ? chatMessages : []).map(key => chatMessages[key]);
+  getMessagesAnterieurs(nomSujet: string, dernierKey: string): Promise<Array<ChatMessage>> {
+    return this.refSujet.child(nomSujet).orderByKey().endAt(dernierKey).limitToLast(ChatService.numberLastMessage + 1)
+      .once('value').then(snapshot => {
+        const msgs = this.getArrayFromSnapshot(snapshot);
+        msgs.pop();
+        this.mettreUtilisateur(msgs);
+        return msgs;
+      });
+  }
+
+  getDerniersMessages(nomSujet: string): Promise<Array<ChatMessage>> {
+    return this.refSujet.child(nomSujet).limitToLast(ChatService.numberLastMessage).once('value').then(snapshot => {
+      const msgs = this.getArrayFromSnapshot(snapshot);
+      this.mettreUtilisateur(msgs);
+      return msgs;
     });
   }
 
-  getLastEvent(roomName: string) {
-    return this.refRooms.child(roomName).limitToLast(1);
+  getEvenementDernierMessage(nomSujet: string) {
+    return this.refSujet.child(nomSujet).limitToLast(1);
   }
 
-  send(roomName: string, typedMsg: string) {
-    return this.userService.getCurrent()
-      .then((user: UtilisateurModel) => {
-        return this.refRooms.child(roomName).push({
-          expediteur: user,
-          content: typedMsg,
-          timestamp: new Date().getTime()
-        });
-      });
+  getEvenementNbMsgs(nomSujet: string) {
+    return this.refNomSujet.child(nomSujet);
   }
 
-  subscribeRoomMessage(roomName: string): Promise<Array<ChatMessage>> {
-    return new Promise((resolve, reject) => this.refRooms.child(roomName)
-      .limitToLast(this.numberLastMessage).on('value', resolve, reject))
+  envyer(nomSujet: string, typedMsg: string) {
+    return this.userService.getCurrent().then((user: UtilisateurModel) => {
+      const msgId = this.refSujet.child(nomSujet).push().key;
+      return this.refSujet.child(nomSujet).child(msgId).update({
+        id: msgId,
+        expediteurUid: user.uid,
+        content: typedMsg,
+        timestamp: new Date().getTime()
+      }).then(() =>
+        this.refNomSujet.child(nomSujet).transaction(nbMsg => {
+          if (nbMsg || nbMsg === 0) {
+            nbMsg++;
+          }
+          return nbMsg;
+        })
+      );
+    });
+  }
+
+  sAbonnerAuSujet(nomSujet: string): Promise<Array<ChatMessage>> {
+    return new Promise((resolve, reject) => this.refSujet.child(nomSujet)
+      .limitToLast(ChatService.numberLastMessage).on('value', resolve, reject))
       .then((snapshot: Firebase.database.DataSnapshot) => {
-        const chatMessages = snapshot.val();
-        return Object.keys(chatMessages ? chatMessages : [])
-          .map(key => chatMessages[key]);
+        const msgs = this.getArrayFromSnapshot(snapshot);
+        this.mettreUtilisateur(msgs);
+        return msgs;
       });
   }
 
-  unSubscribeRoomMessage(roomName: string) {
-    this.refRooms.child(roomName)
-      .limitToLast(this.numberLastMessage).off();
+  seDesabonnerAuSujet(nomSujet: string) {
+    this.refSujet.child(nomSujet).limitToLast(ChatService.numberLastMessage).off();
   }
+
+  getArrayFromSnapshot(snapshotMessages) {
+    const chatMessages = snapshotMessages.val();
+    return Object.keys(chatMessages ? chatMessages : []).map(key => chatMessages[key]);
+  }
+
+  mettreUtilisateur(msgs: Array<ChatMessage>) {
+    for (const msg of msgs) {
+      if (this.utilisateurs[msg.expediteurUid]) {
+        msg.expediteur = this.utilisateurs[msg.expediteurUid];
+      } else {
+        this.userService.getUtilisateur(msg.expediteurUid).then(user => msg.expediteur = user);
+      }
+    }
+  }
+
 }
+

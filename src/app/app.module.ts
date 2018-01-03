@@ -56,9 +56,6 @@ import { ConfirmMessageDialog } from './confirm-message/confirm-message.dialog';
 import { LoginComponent } from './login/login.component';
 import { ChangePasswordDialog } from './profile/change-pssword/change-password.dialog';
 import { ProfileComponent } from './profile/profile.component';
-import { AjouterSujetDialog } from './room/add-room/add-room.dialog';
-import { RoomComponent } from './room/room.component';
-import { SujetService } from './room/room.service';
 import { CanActivateViaAuthGuard } from './shared/can-activate-via-auth.guard';
 import { FirebaseService } from './shared/firebase-service';
 import { LoadingService } from './shared/loading.service';
@@ -69,6 +66,9 @@ import { UserService } from './shared/user/user-service';
 import { ValidationMessageService } from './shared/validation-message.service';
 import { MomentModule } from 'angular2-moment';
 import { PictureDialog } from './chat/picture-dialog/picture-dialog';
+import { RoomComponent } from './sujet/sujets/sujets.component';
+import { AjouterSujetDialog } from './sujet/ajout-sujet/ajout-sujet.dialog';
+import { SujetService } from './sujet/sujet.service';
 
 
 const appRoutes: Routes = [

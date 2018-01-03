@@ -14,7 +14,7 @@
 <mat-list class="list-style">
   <nav>
     <mat-list-item>
-      <button mat-line mat-button *ngFor="let sujet of sujets" [routerLink]="sujet">
+      <button mat-line mat-button mat-raised-button *ngFor="let sujet of sujets" [routerLink]="sujet">
         {{sujet}}
       </button>
     </mat-list-item>

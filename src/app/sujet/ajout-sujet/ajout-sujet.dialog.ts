@@ -4,9 +4,9 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { ValidationMessageService } from '../../shared/validation-message.service';
 
 @Component({
-  selector: 'app-add-room',
-  templateUrl: './add-room.dialogt.html',
-  styleUrls: ['./add-room.dialog.css']
+  selector: 'app-ajout-sujet',
+  templateUrl: './ajout-sujet.dialogt.html',
+  styleUrls: ['./ajout-sujet.dialog.css']
 })
 export class AjouterSujetDialog {
 

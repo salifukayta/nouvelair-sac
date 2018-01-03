@@ -13,12 +13,11 @@
     Envoyer le 1er message !
   </mat-list-item>
 
-  <div #scrollingChat style="overflow-y: scroll; height: 100%">
+  <div #scrollingChat style="overflow-y: auto; height: 100%">
 
-     <!-- TODO the condition here is not correct, is must be a boolean telling if there is still more anterior msgs -->
-    <!--<div *ngIf="myScrollContainer.nativeElement.scrollHeight > (pageHeight - 128)">-->
-      <!--yess, tap here to get more-->
-    <!--</div>-->
+    <div style="display: flex; justify-content: center" *ngIf="nbMsgs > messages?.length">
+      <button mat-button mat-raised-button (click)="getMessagesAnterieurs()">Messages antérieurs</button>
+    </div>
 
     <div *ngFor="let msg of messages" style="display: flex; flex-direction: row; margin-bottom: 10px;">
       <!--class="chat-msg userMsg"-->
@@ -26,7 +25,7 @@
 
       <!--class="chat-header"-->
       <!--class="utilisateur"-->
-      <div style="display: flex; flex-direction: column; margin-right: 2vh; margin-left: 10px">
+      <div style="display: flex; flex-direction: column; margin-right: 2vh; margin-left: 10px" *ngIf="msg.expediteur">
         <!--<img [ngClass.lt-md]="{imgSizePhone: true}" [src]="msg.expediteur.avatar" (click)="openPopupAvaar(msg.expediteur.avatar)">-->
         <img [ngClass.lt-md]="'imgSizePhone'" [src]="msg.expediteur.avatar" (click)="openPopupAvaar(msg.expediteur.avatar)">
         <div class="center-text">
@@ -41,11 +40,11 @@
     border-radius: 35px;
     padding-bottom: 10px;
     min-width: 300px;"
-           [ngClass.lt-md]="{userMsg: msg.expediteur.uid === utilisateurCourant?.uid,
-                           othersMsg: msg.expediteur.uid !== utilisateurCourant?.uid,
+           [ngClass.lt-md]="{userMsg: msg.expediteurUid === utilisateurCourant?.uid,
+                           othersMsg: msg.expediteurUid !== utilisateurCourant?.uid,
                            msgSizePhone: true}"
-           [ngClass]="{userMsg: msg.expediteur.uid === utilisateurCourant?.uid,
-                    othersMsg: msg.expediteur.uid !== utilisateurCourant?.uid}">
+           [ngClass]="{userMsg: msg.expediteurUid === utilisateurCourant?.uid,
+                    othersMsg: msg.expediteurUid !== utilisateurCourant?.uid}">
         <div class="chat-content" #chatContent>
           {{msg.content}}
         </div>

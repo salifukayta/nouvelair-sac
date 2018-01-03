@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as firebase from 'firebase';
+import * as Firebase from 'Firebase';
 import 'rxjs/add/operator/map';
 import { UserReady } from './user-notifier';
 import { UtilisateurModel } from './user.model';
@@ -7,14 +7,14 @@ import { UtilisateurModel } from './user.model';
 @Injectable()
 export class UserService {
 
-  private refDatabaseUsers: firebase.database.Reference;
-  private refStorageUsers: firebase.storage.Reference;
+  private refDatabaseUsers: Firebase.database.Reference;
+  private refStorageUsers: Firebase.storage.Reference;
 
   private currentUser: UtilisateurModel;
 
   constructor(public userReady: UserReady) {
-    this.refDatabaseUsers = firebase.database().ref('users');
-    this.refStorageUsers = firebase.storage().ref('users');
+    this.refDatabaseUsers = Firebase.database().ref('users');
+    this.refStorageUsers = Firebase.storage().ref('users');
   }
 
   getCurrent(): Promise<UtilisateurModel> {
@@ -22,9 +22,8 @@ export class UserService {
       return Promise.resolve(this.currentUser);
     } else {
       return new Promise((resolve, reject) =>
-        firebase.auth().onAuthStateChanged(resolve, reject)).then((user: firebase.User) => {
-        return this.refDatabaseUsers.child(user.uid).once('value')
-          .then(snapshot => {
+        Firebase.auth().onAuthStateChanged(resolve, reject)).then((user: Firebase.User) => {
+        return this.getUtilisateur(user.uid).then(snapshot => {
             this.currentUser = snapshot.val();
             this.userReady.notify(true);
             return this.currentUser;
@@ -34,7 +33,7 @@ export class UserService {
   }
 
   login(userModel: UtilisateurModel, password: string) {
-    return firebase.auth().signInWithEmailAndPassword(userModel.email, password)
+    return Firebase.auth().signInWithEmailAndPassword(userModel.email, password)
       .then(() => {
         return this.getCurrent().then(user => {
           return this.updateUserInfo(user);
@@ -43,9 +42,9 @@ export class UserService {
   }
 
   create(userModel: UtilisateurModel, password: string) {
-    return firebase.auth().createUserWithEmailAndPassword(userModel.email, password)
+    return Firebase.auth().createUserWithEmailAndPassword(userModel.email, password)
       .then(() => {
-        userModel.uid = firebase.auth().currentUser.uid;
+        userModel.uid = Firebase.auth().currentUser.uid;
         return this.refDatabaseUsers.child(userModel.uid).set(userModel).then(() =>
           this.updateUser(userModel, userModel.avatar).then(() => {
             this.currentUser = userModel;
@@ -57,7 +56,7 @@ export class UserService {
 
   isAuth(): Promise<boolean> {
     return this.currentUser ? Promise.resolve(true) : new Promise((resolve, reject) =>
-      firebase.auth().onAuthStateChanged(resolve, reject)).then((user: firebase.User) => {
+      Firebase.auth().onAuthStateChanged(resolve, reject)).then((user: Firebase.User) => {
       this.userReady.notify(Boolean(user));
       return Boolean(user);
     });
@@ -65,19 +64,19 @@ export class UserService {
 
   logOut() {
     this.currentUser = undefined;
-    firebase.auth().signOut();
+    Firebase.auth().signOut();
   }
 
   updatePassword(newPassword: string) {
-    return firebase.auth().currentUser.updatePassword(newPassword);
+    return Firebase.auth().currentUser.updatePassword(newPassword);
   }
 
   updateUser(user: UtilisateurModel, userAvatar: string) {
     // Upload the avatar only if it was changed
     if (userAvatar.startsWith('data')) {
       return this.refStorageUsers.child(user.uid)
-        .putString(userAvatar.substring(userAvatar.indexOf(',') + 1), firebase.storage.StringFormat.BASE64)
-        .then((fileSnapshot: firebase.storage.UploadTaskSnapshot) => {
+        .putString(userAvatar.substring(userAvatar.indexOf(',') + 1), Firebase.storage.StringFormat.BASE64)
+        .then((fileSnapshot: Firebase.storage.UploadTaskSnapshot) => {
           user.avatar = fileSnapshot.downloadURL;
           return this.updateUserAuthEmail(user);
         });
@@ -90,7 +89,7 @@ export class UserService {
    * Update the utilisateur informations
    *
    * @param user
-   * @returns {firebase.Promise<any>}
+   * @returns {Firebase.Promise<any>}
    */
   updateUserInfo(user: UtilisateurModel) {
     return this.refDatabaseUsers.child(user.uid).update(user)
@@ -101,25 +100,28 @@ export class UserService {
    * Send email to the utilisateur to reset his password
    *
    * @param user
-   * @returns {firebase.Promise<any>}
+   * @returns {Firebase.Promise<any>}
    */
   resetPassword(user: UtilisateurModel) {
-    return firebase.auth().sendPasswordResetEmail(user.email);
+    return Firebase.auth().sendPasswordResetEmail(user.email);
   }
 
   /**
    * Update utilisateur auth email if changed then utilisateur info
    *
    * @param user
-   * @returns {firebase.Promise<any>}
+   * @returns {Firebase.Promise<any>}
    */
   private updateUserAuthEmail(user: UtilisateurModel) {
-    if (firebase.auth().currentUser.email !== user.email) {
-      return firebase.auth().currentUser.updateEmail(user.email)
+    if (Firebase.auth().currentUser.email !== user.email) {
+      return Firebase.auth().currentUser.updateEmail(user.email)
         .then(() => this.updateUserInfo(user));
     } else {
       return this.updateUserInfo(user);
     }
   }
 
+  getUtilisateur(utilisateurUid: string) {
+    return this.refDatabaseUsers.child(utilisateurUid).once('value');
+  }
 }

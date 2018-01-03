@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -10,7 +10,7 @@ import { ChatMessage } from './chat-message';
 import { ChatService } from './chat.service';
 import { PictureDialog } from './picture-dialog/picture-dialog';
 
-// TODO ajouter un bouton pour afficher les messages qui sont avant
+// TODO afficher l'état de l'utilisateur => une barre verte si connecté grise si non
 
 @Component({
   selector: 'app-chat',
@@ -25,11 +25,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   utilisateurCourant: UtilisateurModel;
   messages: Array<ChatMessage>;
   typedMsg: string;
-
-  pageHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  nbMsgs: number;
 
   isPaused = false;
   firstLoad = true;
+
+  pageHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
   private snackBarConfig: MatSnackBarConfig;
 
@@ -45,19 +46,24 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadingService.show(true);
-    this.messages = null;
     this.isPaused = false;
     this.firstLoad = true;
     this.userService.getCurrent().then(user => this.utilisateurCourant = user);
 
+    // récupération des messages antériux
     this.route.params.subscribe((params: Params) => {
       this.sujetCourant = params['sujet'];
-      this.chatService.getLastMessagess(this.sujetCourant).then(messages => {
+      this.chatService.getDerniersMessages(this.sujetCourant).then(messages => {
         this.messages = messages;
         setTimeout(() => this.scrollToBottom(), 5);
         this.loadingService.show(false);
       });
       this.subscribeToRoom();
+    });
+
+    // get nombre total de messages
+    this.chatService.getEvenementNbMsgs(this.sujetCourant).on('value', (snapshot) => {
+      this.nbMsgs = snapshot.val();
     });
   }
 
@@ -77,12 +83,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMsg() {
-    this.chatService.send(this.sujetCourant, this.typedMsg.trim())
+    this.chatService.envyer(this.sujetCourant, this.typedMsg.trim())
       .then(() => this.typedMsg = '')
       .catch(err => {
         console.error(err);
         this.snackBar.open(`Erreur envoie message`, '', this.snackBarConfig);
       });
+  }
+
+  getMessagesAnterieurs() {
+    this.chatService.getMessagesAnterieurs(this.sujetCourant, this.messages[0].id).then(msgsAnterieurs => {
+      this.messages = msgsAnterieurs.concat(this.messages);
+    });
   }
 
   togglePauseChat() {
@@ -95,29 +107,35 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   openPopupAvaar(avatar: string) {
-    console.log(avatar);
     this.dialog.open(PictureDialog, { data: avatar });
   }
 
   private subscribeToRoom() {
-    this.chatService.getLastEvent(this.sujetCourant).on('value', (snapshot) => {
+    this.chatService.getEvenementDernierMessage(this.sujetCourant).on('value', (snapshot) => {
       if (this.firstLoad) {
         this.firstLoad = false;
       } else {
-        const chatMessages: ChatMessage = snapshot.val();
-        this.messages.push(Object.keys(chatMessages ? chatMessages : []).map(key => chatMessages[key])[0]);
-        if (this.messages[this.messages.length - 1].expediteur.uid !== this.utilisateurCourant.uid) {
-          const snackBarRef = this.snackBar.open(`Nouveau message reçu...`, `y aller`, this.snackBarConfig);
-          snackBarRef.onAction().subscribe(() => {
-            this.scrollToBottom();
-          });
-        }
+        const dernierMsg: ChatMessage = this.chatService.getArrayFromSnapshot(snapshot)[0];
+        this.chatService.mettreUtilisateur([dernierMsg]);
+        this.messages.push(dernierMsg);
+        // if (dernierMsg.expediteurUid !== this.utilisateurCourant.uid) {
+          this.snackBar.open(`Nouveau message reçu...`, `y aller`, this.snackBarConfig)
+            .onAction().subscribe(() => this.scrollToBottom());
+        // }
       }
     });
   }
 
   private unSubscribeToRoom() {
-    this.chatService.getLastEvent(this.sujetCourant).off();
+    this.chatService.getEvenementDernierMessage(this.sujetCourant).off();
+  }
+
+  // FIXME afficher le snackbar que si l'utilisateur a trop de messages
+  private setStyleScroll() {
+    if (this.myScrollContainer.nativeElement.scrollHeight > (this.pageHeight - 128)) {
+      this.myScrollContainer.nativeElement.styles.overflowX = 'scroll';
+    }
   }
 
 }
+
