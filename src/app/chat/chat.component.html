@@ -25,13 +25,12 @@
 
       <!--class="chat-header"-->
       <!--class="utilisateur"-->
-      <div style="display: flex; flex-direction: column; margin-right: 2vh; margin-left: 10px" *ngIf="msg.expediteur">
-        <!--<img [ngClass.lt-md]="{imgSizePhone: true}" [src]="msg.expediteur.avatar" (click)="openPopupAvaar(msg.expediteur.avatar)">-->
+      <div style="display: flex; flex-direction: column; margin-right: 2vh; margin-left: 10px" *ngIf="msg?.expediteur">
         <img [ngClass.lt-md]="'imgSizePhone'" [src]="msg.expediteur.avatar" (click)="openPopupAvaar(msg.expediteur.avatar)">
         <div class="center-text">
           {{msg.expediteur.prenom}}.{{msg.expediteur.nom.substr(0, 1).toUpperCase()}}
         </div>
-        <div class="utilisateur-batiment center-text">{{msg.expediteur.batiment}}{{msg.expediteur.numApp}}</div>
+        <div class="utilisateur-batiment center-text">{{msg.expediteur.batiment}{{msg.expediteur.numApp}}</div>
       </div>
 
       <div style="display: flex; flex-direction: column;

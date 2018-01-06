@@ -4,7 +4,6 @@ import { UserService } from '../shared/user/user-service';
 import { UtilisateurModel } from '../shared/user/user.model';
 import { ChatMessage } from './chat-message';
 
-
 @Injectable()
 export class ChatService {
 
@@ -22,6 +21,14 @@ export class ChatService {
     this.userService.getCurrent().then((user: UtilisateurModel) => this.utilisateurs[user.uid] = user);
   }
 
+  getDerniersMessages(nomSujet: string): Promise<Array<ChatMessage>> {
+    return this.refSujet.child(nomSujet).limitToLast(ChatService.numberLastMessage).once('value').then(snapshot => {
+      const msgs = this.getArrayFromSnapshot(snapshot);
+      this.mettreUtilisateur(msgs);
+      return msgs;
+    });
+  }
+
   getMessagesAnterieurs(nomSujet: string, dernierKey: string): Promise<Array<ChatMessage>> {
     return this.refSujet.child(nomSujet).orderByKey().endAt(dernierKey).limitToLast(ChatService.numberLastMessage + 1)
       .once('value').then(snapshot => {
@@ -30,14 +37,6 @@ export class ChatService {
         this.mettreUtilisateur(msgs);
         return msgs;
       });
-  }
-
-  getDerniersMessages(nomSujet: string): Promise<Array<ChatMessage>> {
-    return this.refSujet.child(nomSujet).limitToLast(ChatService.numberLastMessage).once('value').then(snapshot => {
-      const msgs = this.getArrayFromSnapshot(snapshot);
-      this.mettreUtilisateur(msgs);
-      return msgs;
-    });
   }
 
   getEvenementDernierMessage(nomSujet: string) {
@@ -86,15 +85,14 @@ export class ChatService {
     return Object.keys(chatMessages ? chatMessages : []).map(key => chatMessages[key]);
   }
 
-  mettreUtilisateur(msgs: Array<ChatMessage>) {
+  mettreUtilisateur(msgs: Array<ChatMessage>): void {
     for (const msg of msgs) {
       if (this.utilisateurs[msg.expediteurUid]) {
         msg.expediteur = this.utilisateurs[msg.expediteurUid];
       } else {
-        this.userService.getUtilisateur(msg.expediteurUid).then(user => msg.expediteur = user);
+        this.userService.getUtilisateur(msg.expediteurUid).then(userSnapshot => msg.expediteur = userSnapshot.val());
       }
     }
   }
 
 }
-
