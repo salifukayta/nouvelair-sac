@@ -24,10 +24,10 @@ export class UserService {
       return new Promise((resolve, reject) =>
         Firebase.auth().onAuthStateChanged(resolve, reject)).then((user: Firebase.User) => {
         return this.getUtilisateur(user.uid).then(snapshot => {
-            this.currentUser = snapshot.val();
-            this.userReady.notify(true);
-            return this.currentUser;
-          });
+          this.currentUser = snapshot.val();
+          this.userReady.notify(true);
+          return this.currentUser;
+        });
       });
     }
   }
@@ -36,8 +36,34 @@ export class UserService {
     return Firebase.auth().signInWithEmailAndPassword(userModel.email, password)
       .then(() => {
         return this.getCurrent().then(user => {
-          return this.updateUserInfo(user);
+          // since I can connect from multiple devices or browser tabs, we store each connection instance separately
+          // any time that connectionsRef's value is null (i.e. has no children) I am offline
+          const myConnectionsRef = Firebase.database().ref('users/' + user.uid + '/connections');
+
+          // stores the timestamp of my last disconnect (the last time I was seen online)
+          const lastOnlineRef = Firebase.database().ref('users/' + user.uid + '/lastOnline');
+
+          const connectedRef = Firebase.database().ref('.info/connected');
+          connectedRef.on('value', function (snap) {
+            if (snap.val() === true) {
+              // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
+              const con = myConnectionsRef.push();
+
+              // When I disconnect, remove this device
+              con.onDisconnect().remove();
+
+              // Add this device to my connections list
+              // this value could contain info about the device or a timestamp too
+              con.set(true);
+
+              // When I disconnect, update the last time I was seen online
+              lastOnlineRef.onDisconnect().set(Firebase.database.ServerValue.TIMESTAMP);
+            }
+          });
         });
+        // return this.getCurrent().then(user => {
+        //   return this.updateUserInfo(user);
+        // });
       });
   }
 

@@ -58,7 +58,6 @@ import { ChangePasswordDialog } from './profile/change-pssword/change-password.d
 import { ProfileComponent } from './profile/profile.component';
 import { CanActivateViaAuthGuard } from './shared/can-activate-via-auth.guard';
 import { FirebaseService } from './shared/firebase-service';
-import { LoadingService } from './shared/loading.service';
 import { MenuService } from './shared/menu.service';
 import { TextFromCamelCasePipe } from './shared/text-from-camel-case.pipe/text-from-camel-case.pipe';
 import { UserReady } from './shared/user/user-notifier';
@@ -66,15 +65,16 @@ import { UserService } from './shared/user/user-service';
 import { ValidationMessageService } from './shared/validation-message.service';
 import { MomentModule } from 'angular2-moment';
 import { PictureDialog } from './chat/picture-dialog/picture-dialog';
-import { RoomComponent } from './sujet/sujets/sujets.component';
+import { SujetComponent } from './sujet/sujets/sujets.component';
 import { AjouterSujetDialog } from './sujet/ajout-sujet/ajout-sujet.dialog';
 import { SujetService } from './sujet/sujet.service';
+import { BusyModule } from 'angular2-busy';
 
 
 const appRoutes: Routes = [
   { path: 'login/disconnect', component: LoginComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'sujet', component: RoomComponent, canActivate: [CanActivateViaAuthGuard] },
+  { path: 'sujet', component: SujetComponent, canActivate: [CanActivateViaAuthGuard] },
   { path: 'sujet/:sujet', component: ChatComponent, canActivate: [CanActivateViaAuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [CanActivateViaAuthGuard] },
   { path: '', component: LoginComponent, canActivate: [CanActivateViaAuthGuard] },
@@ -90,7 +90,7 @@ const localStorageServiceConfig = {
   declarations: [
     AppComponent,
     LoginComponent,
-    RoomComponent,
+    SujetComponent,
     ChatComponent,
     ProfileComponent,
     ChangePasswordDialog,
@@ -112,6 +112,7 @@ const localStorageServiceConfig = {
     RouterModule.forRoot(appRoutes),
     ReactiveFormsModule,
     MomentModule,
+    BusyModule,
 
     FlexLayoutModule,
 
@@ -145,7 +146,6 @@ const localStorageServiceConfig = {
     UserService,
     FirebaseService,
     MenuService,
-    LoadingService,
     SujetService,
     ChatService,
     UserReady,

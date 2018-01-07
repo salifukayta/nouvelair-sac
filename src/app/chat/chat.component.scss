@@ -48,7 +48,7 @@ form {
 }
 
 form mat-form-field {
-  width: Calc(100% - 40px);
+  width: calc(100% - 40px);
 }
 
 .mat-divider {
@@ -75,16 +75,14 @@ form mat-form-field {
 
 img {
   max-width: 120px;
-  max-height: 80px;
 }
 
 .imgSizePhone {
   max-width: 60px;
-  max-height: 50px;
 }
 
 .msgSizePhone {
-  min-width: 200px !important;
+  min-width: 250px !important;
 }
 
 .nouveau-message {
@@ -102,3 +100,4 @@ footer {
   padding-bottom: 5px;
   background-color: whitesmoke;
 }
+

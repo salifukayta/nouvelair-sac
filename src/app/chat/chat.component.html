@@ -7,7 +7,7 @@
   </div>
 </mat-toolbar>
 
-<mat-list class="list-style" id="msgs-list">
+<mat-list class="list-style" id="msgs-list" [ngBusy]="loading">
 
   <mat-list-item *ngIf="!firstLoad && messages?.length === 0">
     Envoyer le 1er message !
@@ -15,7 +15,7 @@
 
   <div #scrollingChat style="overflow-y: auto; height: 100%">
 
-    <div style="display: flex; justify-content: center" *ngIf="nbMsgs > messages?.length">
+    <div style="display: flex; justify-content: center" *ngIf="!firstLoad && nbMsgs > messages?.length">
       <button mat-button mat-raised-button (click)="getMessagesAnterieurs()">Messages antérieurs</button>
     </div>
 
@@ -30,7 +30,7 @@
         <div class="center-text">
           {{msg.expediteur.prenom}}.{{msg.expediteur.nom.substr(0, 1).toUpperCase()}}
         </div>
-        <div class="utilisateur-batiment center-text">{{msg.expediteur.batiment}{{msg.expediteur.numApp}}</div>
+        <div class="utilisateur-batiment center-text">{{msg.expediteur.batiment}}{{msg.expediteur.numApp}}</div>
       </div>
 
       <div style="display: flex; flex-direction: column;

@@ -6,23 +6,23 @@
   <div class="btn-size"></div>
 </mat-toolbar>
 
-<div *ngIf="!firstLoad && sujets?.length === 0">
+<div *ngIf="!firstLoad && resumesSujet?.length === 0">
   <br>
   <p class="center-text">Créer le 1er sujet de discussion</p>
 </div>
 
-<mat-list class="list-style">
+<mat-list class="list-style" [ngBusy]="loading">
   <nav>
     <mat-list-item>
-      <button mat-line mat-button mat-raised-button *ngFor="let sujet of sujets" [routerLink]="sujet">
-        {{sujet}}
+      <button mat-line mat-button mat-raised-button *ngFor="let resumeSujet of resumesSujet" [routerLink]="resumeSujet.nomSujet">
+        {{resumeSujet.nomSujet}}
       </button>
     </mat-list-item>
   </nav>
 </mat-list>
 
-<div class="corner-bottom-right">
-  <button mat-fab color="primary" (tap)="ajouterSujet()">
+<div class="corner-bottom-right" (tap)="ajouterSujet()">
+  <button mat-fab color="primary">
     <mat-icon>add</mat-icon>
   </button>
 </div>

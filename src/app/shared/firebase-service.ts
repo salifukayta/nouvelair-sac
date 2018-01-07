@@ -1,10 +1,10 @@
-import * as firebase from 'firebase';
+import * as Firebase from 'Firebase';
 
 export class FirebaseService {
 
   constructor() {
     // Initialize Firebase
-    firebase.initializeApp({
+    Firebase.initializeApp({
       apiKey: 'AIzaSyAaJjEuweL-BRVXHVPVL1-ETMzeQYdekzY',
       authDomain: 'nouvelair-sac.firebaseapp.com',
       databaseURL: 'https://nouvelair-sac.firebaseio.com',

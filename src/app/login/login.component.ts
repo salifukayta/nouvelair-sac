@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import * as firebase from 'firebase';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { UtilisateurModel } from '../shared/user/user.model';
 import { UserService } from '../shared/user/user-service';
-import { MenuService } from '../shared/menu.service';
-import { LoadingService } from '../shared/loading.service';
 import { GlobalValidator } from '../shared/global.validator';
 import { ValidationMessageService } from '../shared/validation-message.service';
 
@@ -21,7 +18,10 @@ export class LoginComponent implements OnInit {
   password: string;
   confirmPassword: string;
   userAvatar: string;
+
   isOnLogin = true;
+  loading: boolean = null;
+
   loginForm: FormGroup;
   formErrors = {
     email: '',
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
 
   private snackBarConfig: MatSnackBarConfig;
 
-  constructor(private userService: UserService, private loadingService: LoadingService, private messageService: ValidationMessageService,
+  constructor(private userService: UserService, private messageService: ValidationMessageService,
               private router: Router, private formBuilder: FormBuilder, private snackBar: MatSnackBar) {
 
     this.snackBarConfig = new MatSnackBarConfig();
@@ -93,15 +93,15 @@ export class LoginComponent implements OnInit {
 
   login() {
     if (this.isOnLogin) {
-      this.loadingService.show(true);
+      this.loading = true;
       this.userService.login(this.utilisateur, this.password)
         .then(() => {
-          this.loadingService.show(false);
+          this.loading = null;
           this.router.navigate(['sujet']);
           this.snackBar.open(`Authentification réussit`, '', this.snackBarConfig);
         })
         .catch((err: any) => {
-          this.loadingService.show(false);
+          this.loading = null;
           console.error(err);
           let errMsg = 'Erreur Authentification';
           switch (err.code) {
@@ -124,16 +124,16 @@ export class LoginComponent implements OnInit {
       this.isOnLogin = false;
       setTimeout(GlobalValidator.samePassword(this.loginForm, 'login'), 2000);
     } else {
-      this.loadingService.show(true);
+      this.loading = true;
       this.utilisateur.avatar = this.userAvatar;
       this.userService.create(this.utilisateur, this.password)
         .then(() => {
-          this.loadingService.show(false);
+          this.loading = null;
           this.router.navigate(['sujet']);
           this.snackBar.open(`Création de compte réussit`, '', this.snackBarConfig);
         })
         .catch((err: any) => {
-          this.loadingService.show(false);
+          this.loading = null;
           console.error(err);
           let errMsg = `Erreur lors de Création de compte`;
           switch (err.code) {

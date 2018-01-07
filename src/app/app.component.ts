@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { FirebaseService } from './shared/firebase-service';
-import { LoadingService } from './shared/loading.service';
 import { MenuService } from './shared/menu.service';
 import { UserReady } from './shared/user/user-notifier';
 import { UserService } from './shared/user/user-service';
@@ -12,7 +11,7 @@ import * as moment from 'moment';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
 
@@ -20,11 +19,8 @@ export class AppComponent implements OnInit {
 
   utilisateurCourant: UtilisateurModel;
 
-  isLoading = false;
-
-  constructor(public firebaseService: FirebaseService, public userService: UserService,
-              public userReady: UserReady, public toolbarService: MenuService,
-              public loadingService: LoadingService) {
+  constructor(private firebaseService: FirebaseService, private userService: UserService,
+              private userReady: UserReady, private toolbarService: MenuService) {
 
   }
 
@@ -36,7 +32,6 @@ export class AppComponent implements OnInit {
       this.menu.open()
     });
 
-    this.loadingService.showSource$.subscribe(show => setTimeout(() => this.isLoading = show, 0));
 
     this.userReady.notifySource$.subscribe(isReady => {
       if (isReady) {

@@ -8,7 +8,7 @@
 </mat-toolbar>
 
 <mat-list>
-  <form [formGroup]="profileForm">
+  <form [formGroup]="profileForm" [ngBusy]="loading">
 
     <mat-list-item class="center-input" [ngClass]="{pickPicture: editMode}">
       <img class="margin-right style-avatar" *ngIf="!isLoadingAvatar" (click)="editMode && inputAvatar.click()" [src]="userAvatar">

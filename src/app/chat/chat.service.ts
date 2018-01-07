@@ -3,6 +3,7 @@ import * as Firebase from 'Firebase';
 import { UserService } from '../shared/user/user-service';
 import { UtilisateurModel } from '../shared/user/user.model';
 import { ChatMessage } from './chat-message';
+import { ResumeSujetModel } from '../sujet/resume-sujet.model';
 
 @Injectable()
 export class ChatService {
@@ -15,7 +16,7 @@ export class ChatService {
   private utilisateurs: {[userUid: string]: UtilisateurModel};
 
   constructor(private userService: UserService) {
-    this.refSujet = Firebase.database().ref('/sujets');
+    this.refSujet = Firebase.database().ref('/resumesSujet');
     this.refNomSujet = Firebase.database().ref('nomSujets');
     this.utilisateurs = <any>{};
     this.userService.getCurrent().then((user: UtilisateurModel) => this.utilisateurs[user.uid] = user);
@@ -43,7 +44,7 @@ export class ChatService {
     return this.refSujet.child(nomSujet).limitToLast(1);
   }
 
-  getEvenementNbMsgs(nomSujet: string) {
+  getEvenementResumeMsgs(nomSujet: string) {
     return this.refNomSujet.child(nomSujet);
   }
 
@@ -56,11 +57,12 @@ export class ChatService {
         content: typedMsg,
         timestamp: new Date().getTime()
       }).then(() =>
-        this.refNomSujet.child(nomSujet).transaction(nbMsg => {
-          if (nbMsg || nbMsg === 0) {
-            nbMsg++;
+        this.refNomSujet.child(nomSujet).transaction((resumeSujetModel: ResumeSujetModel) => {
+          if (resumeSujetModel.nbMsg || resumeSujetModel.nbMsg === 0) {
+            resumeSujetModel.nbMsg++;
+            resumeSujetModel.lastMsgTime = new Date().getTime();
           }
-          return nbMsg;
+          return resumeSujetModel;
         })
       );
     });
@@ -90,9 +92,12 @@ export class ChatService {
       if (this.utilisateurs[msg.expediteurUid]) {
         msg.expediteur = this.utilisateurs[msg.expediteurUid];
       } else {
-        this.userService.getUtilisateur(msg.expediteurUid).then(userSnapshot => msg.expediteur = userSnapshot.val());
+        this.userService.getUtilisateur(msg.expediteurUid).then(userSnapshot => {
+          msg.expediteur = userSnapshot.val()
+        });
       }
     }
   }
 
 }
+
